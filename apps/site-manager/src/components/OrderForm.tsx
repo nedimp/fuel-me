@@ -1,5 +1,11 @@
 import { useState } from "react";
-import type { CreateOrderDto, FuelType, UrgencyLevel, ApiResponse, Order } from "shared";
+import type {
+  CreateOrderDto,
+  FuelType,
+  UrgencyLevel,
+  ApiResponse,
+  Order,
+} from "shared";
 
 const API_URL = "http://localhost:4000";
 
@@ -48,7 +54,9 @@ export function OrderForm({ token }: OrderFormProps) {
       const result: ApiResponse<Order> = await response.json();
 
       if (result.success && result.data) {
-        setSuccess(`Order created successfully! Total price: $${result.data.totalPrice.toFixed(2)}`);
+        setSuccess(
+          `Order created successfully! Total price: $${result.data.totalPrice.toFixed(2)}`,
+        );
         setLastOrder(result.data);
         setGallons("");
         setFuelType("Diesel");
@@ -182,7 +190,9 @@ export function OrderForm({ token }: OrderFormProps) {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-500">Order ID:</span>
-              <span className="font-mono text-xs">{lastOrder.id.slice(0, 8)}...</span>
+              <span className="font-mono text-xs">
+                {lastOrder.id.slice(0, 8)}...
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Fuel Type:</span>

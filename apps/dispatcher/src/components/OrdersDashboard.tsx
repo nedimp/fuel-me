@@ -81,7 +81,8 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
 
   // Sort orders by urgency (Critical > High > Standard), then by date
   const sortedOrders = [...orders].sort((a, b) => {
-    const priorityDiff = getOrderPriority(b.urgencyLevel) - getOrderPriority(a.urgencyLevel);
+    const priorityDiff =
+      getOrderPriority(b.urgencyLevel) - getOrderPriority(a.urgencyLevel);
     if (priorityDiff !== 0) return priorityDiff;
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
@@ -113,28 +114,40 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
   }
 
   // Summary stats
-  const criticalCount = orders.filter((o) => o.urgencyLevel === "Critical").length;
+  const criticalCount = orders.filter(
+    (o) => o.urgencyLevel === "Critical",
+  ).length;
   const highCount = orders.filter((o) => o.urgencyLevel === "High").length;
-  const standardCount = orders.filter((o) => o.urgencyLevel === "Standard").length;
+  const standardCount = orders.filter(
+    (o) => o.urgencyLevel === "Standard",
+  ).length;
 
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <div className="bg-white rounded-lg shadow-md p-4">
-          <h3 className="text-sm font-medium text-gray-600 mb-1">Total Orders</h3>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">
+            Total Orders
+          </h3>
           <p className="text-3xl font-bold text-purple-600">{orders.length}</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-500">
-          <h3 className="text-sm font-medium text-gray-600 mb-1">🚨 Critical</h3>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">
+            🚨 Critical
+          </h3>
           <p className="text-3xl font-bold text-red-600">{criticalCount}</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-orange-500">
-          <h3 className="text-sm font-medium text-gray-600 mb-1">⚠️ High Priority</h3>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">
+            ⚠️ High Priority
+          </h3>
           <p className="text-3xl font-bold text-orange-600">{highCount}</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-gray-300">
-          <h3 className="text-sm font-medium text-gray-600 mb-1">📋 Standard</h3>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">
+            📋 Standard
+          </h3>
           <p className="text-3xl font-bold text-gray-600">{standardCount}</p>
         </div>
       </div>

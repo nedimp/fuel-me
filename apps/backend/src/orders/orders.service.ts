@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { CreateOrderDto, Order, FuelType, UrgencyLevel } from 'shared';
-import { PricingService } from '../pricing/pricing.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma.service";
+import { CreateOrderDto, Order, FuelType, UrgencyLevel } from "shared";
+import { PricingService } from "../pricing/pricing.service";
 
 @Injectable()
 export class OrdersService {
@@ -10,11 +10,17 @@ export class OrdersService {
     private readonly pricingService: PricingService,
   ) {}
 
-  async createOrder(userId: string, createOrderDto: CreateOrderDto): Promise<Order> {
+  async createOrder(
+    userId: string,
+    createOrderDto: CreateOrderDto,
+  ): Promise<Order> {
     const { fuelType, gallons, urgencyLevel } = createOrderDto;
 
     // Calculate total price
-    const totalPrice = this.pricingService.calculateTotalPrice(gallons, urgencyLevel);
+    const totalPrice = this.pricingService.calculateTotalPrice(
+      gallons,
+      urgencyLevel,
+    );
 
     // Create order in database
     const order = await this.prisma.order.create({
@@ -60,8 +66,8 @@ export class OrdersService {
       },
       orderBy: [
         // Critical first, then High, then Standard
-        { urgencyLevel: 'desc' },
-        { createdAt: 'desc' },
+        { urgencyLevel: "desc" },
+        { createdAt: "desc" },
       ],
     });
 
