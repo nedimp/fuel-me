@@ -23,8 +23,8 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
     try {
       const endpoint = isLogin ? "/auth/login" : "/auth/register";
       const body = isLogin
-        ? ({ email, password } as LoginDto)
-        : ({ email, password, name } as RegisterDto);
+        ? ({ email, password, expectedRole: 'user' } as LoginDto)
+        : ({ email, password, name, role: 'user' } as RegisterDto);
 
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: "POST",

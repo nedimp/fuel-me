@@ -36,7 +36,7 @@ export class AuthService {
         email: dto.email,
         password: hashedPassword,
         name: dto.name,
-        role: "user",
+        role: dto.role || "user",
       },
     });
 
@@ -65,6 +65,13 @@ export class AuthService {
 
     if (!isPasswordValid) {
       throw new UnauthorizedException("Invalid credentials");
+    }
+
+    // Validate role if expectedRole is provided
+    if (dto.expectedRole && user.role !== dto.expectedRole) {
+      throw new UnauthorizedException(
+        `This account is not authorized for ${dto.expectedRole} access`
+      );
     }
 
     // Generate token
