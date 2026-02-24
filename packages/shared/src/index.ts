@@ -69,3 +69,28 @@ export interface AuthResponse {
   token: string;
   message: string;
 }
+
+// Order types
+export type FuelType = "Diesel" | "Unleaded";
+export type UrgencyLevel = "Standard" | "High" | "Critical";
+
+export interface Order {
+  id: string;
+  userId: string;
+  fuelType: FuelType;
+  gallons: number;
+  urgencyLevel: UrgencyLevel;
+  totalPrice: number;
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    name: string;
+    email: string;
+  };
+}
+
+export interface CreateOrderDto {
+  fuelType: FuelType;
+  gallons: number;
+  urgencyLevel: UrgencyLevel;
+}
