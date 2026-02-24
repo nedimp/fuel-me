@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import type { AuthUser, AuthResponse } from 'shared';
-import { AuthForm } from './components/AuthForm';
-import { Dashboard } from './components/Dashboard';
+import { useState, useEffect } from "react";
+import type { AuthUser, AuthResponse } from "shared";
+import { AuthForm } from "./components/AuthForm";
+import { Dashboard } from "./components/Dashboard";
 
 function App() {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -9,15 +9,15 @@ function App() {
 
   useEffect(() => {
     // Check if user is already logged in
-    const token = localStorage.getItem('authToken');
-    const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem("authToken");
+    const storedUser = localStorage.getItem("user");
 
     if (token && storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (err) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
       }
     }
     setLoading(false);
@@ -28,8 +28,8 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
     setUser(null);
   };
 

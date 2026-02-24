@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import type { AuthUser } from 'shared';
+import { useEffect, useState } from "react";
+import type { AuthUser } from "shared";
 
-const API_URL = 'http://localhost:4000';
+const API_URL = "http://localhost:4000";
 
 interface DashboardProps {
   user: AuthUser;
@@ -9,13 +9,13 @@ interface DashboardProps {
 }
 
 export function Dashboard({ user, onLogout }: DashboardProps) {
-  const [healthStatus, setHealthStatus] = useState<string>('');
+  const [healthStatus, setHealthStatus] = useState<string>("");
 
   useEffect(() => {
     fetch(`${API_URL}/health`)
       .then((res) => res.json())
       .then((data) => setHealthStatus(data.status))
-      .catch(() => setHealthStatus('error'));
+      .catch(() => setHealthStatus("error"));
   }, []);
 
   return (
@@ -45,19 +45,19 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             </h2>
             <div className="space-y-2 text-sm">
               <div>
-                <span className="text-gray-500">ID:</span>{' '}
+                <span className="text-gray-500">ID:</span>{" "}
                 <span className="font-mono text-xs">{user.id}</span>
               </div>
               <div>
-                <span className="text-gray-500">Email:</span>{' '}
+                <span className="text-gray-500">Email:</span>{" "}
                 <span className="text-gray-900">{user.email}</span>
               </div>
               <div>
-                <span className="text-gray-500">Name:</span>{' '}
+                <span className="text-gray-500">Name:</span>{" "}
                 <span className="text-gray-900">{user.name}</span>
               </div>
               <div>
-                <span className="text-gray-500">Role:</span>{' '}
+                <span className="text-gray-500">Role:</span>{" "}
                 <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
                   {user.role}
                 </span>
@@ -72,13 +72,13 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             <div className="flex items-center space-x-2">
               <div
                 className={`w-3 h-3 rounded-full ${
-                  healthStatus === 'healthy'
-                    ? 'bg-green-500'
-                    : 'bg-red-500'
+                  healthStatus === "healthy" ? "bg-green-500" : "bg-red-500"
                 }`}
               ></div>
               <span className="text-sm text-gray-700">
-                {healthStatus === 'healthy' ? 'All systems operational' : 'System error'}
+                {healthStatus === "healthy"
+                  ? "All systems operational"
+                  : "System error"}
               </span>
             </div>
           </div>
@@ -107,7 +107,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
           </h2>
           <p className="text-gray-600">
             You've successfully authenticated! This is a demo dashboard showing
-            the login/register functionality for the Fuel.me technical interview.
+            the login/register functionality for the Fuel.me technical
+            interview.
           </p>
           <div className="mt-4 p-4 bg-blue-50 rounded">
             <h3 className="font-semibold text-blue-900 mb-2">Features:</h3>

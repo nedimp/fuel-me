@@ -1,7 +1,7 @@
-import { useState, FormEvent } from 'react';
-import type { RegisterDto, LoginDto, AuthResponse } from 'shared';
+import { useState, FormEvent } from "react";
+import type { RegisterDto, LoginDto, AuthResponse } from "shared";
 
-const API_URL = 'http://localhost:4000';
+const API_URL = "http://localhost:4000";
 
 interface AuthFormProps {
   onSuccess: (authData: AuthResponse) => void;
@@ -9,9 +9,9 @@ interface AuthFormProps {
 
 export function AuthForm({ onSuccess }: AuthFormProps) {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,30 +21,30 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? '/auth/login' : '/auth/register';
+      const endpoint = isLogin ? "/auth/login" : "/auth/register";
       const body = isLogin
         ? ({ email, password } as LoginDto)
         : ({ email, password, name } as RegisterDto);
 
       const response = await fetch(`${API_URL}${endpoint}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Authentication failed');
+        throw new Error(errorData.message || "Authentication failed");
       }
 
       const data: AuthResponse = await response.json();
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       onSuccess(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Authentication failed');
+      setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -52,14 +52,14 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-      <div className="max-w-md w-full"  >
+      <div className="max-w-md w-full">
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-blue-900 mb-2">
               Site Manager
             </h1>
             <p className="text-gray-600">
-              {isLogin ? 'Sign in to your account' : 'Create a new account'}
+              {isLogin ? "Sign in to your account" : "Create a new account"}
             </p>
           </div>
 
@@ -71,7 +71,10 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email
               </label>
               <input
@@ -87,7 +90,10 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
 
             {!isLogin && (
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Name
                 </label>
                 <input
@@ -103,7 +109,10 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
             )}
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Password
               </label>
               <input
@@ -122,7 +131,11 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
+              {loading
+                ? "Please wait..."
+                : isLogin
+                  ? "Sign In"
+                  : "Create Account"}
             </button>
           </form>
 
@@ -136,7 +149,7 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
             >
               {isLogin
                 ? "Don't have an account? Sign up"
-                : 'Already have an account? Sign in'}
+                : "Already have an account? Sign in"}
             </button>
           </div>
         </div>

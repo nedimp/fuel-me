@@ -1,13 +1,18 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import * as bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
-import type { AuthUser, RegisterDto, LoginDto, AuthResponse } from 'shared';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from "@nestjs/common";
+import { PrismaService } from "../prisma.service";
+import * as bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
+import type { AuthUser, RegisterDto, LoginDto, AuthResponse } from "shared";
 
 @Injectable()
 export class AuthService {
-  private readonly JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-  private readonly JWT_EXPIRES_IN = '7d';
+  private readonly JWT_SECRET =
+    process.env.JWT_SECRET || "your-secret-key-change-in-production";
+  private readonly JWT_EXPIRES_IN = "7d";
 
   constructor(private prisma: PrismaService) {}
 
@@ -18,7 +23,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException("User with this email already exists");
     }
 
     // Hash password
@@ -31,7 +36,7 @@ export class AuthService {
         email: dto.email,
         password: hashedPassword,
         name: dto.name,
-        role: 'user',
+        role: "user",
       },
     });
 
@@ -41,7 +46,7 @@ export class AuthService {
     return {
       user: this.toAuthUser(user),
       token,
-      message: 'Registration successful',
+      message: "Registration successful",
     };
   }
 
@@ -52,14 +57,14 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     // Generate token
@@ -68,7 +73,7 @@ export class AuthService {
     return {
       user: this.toAuthUser(user),
       token,
-      message: 'Login successful',
+      message: "Login successful",
     };
   }
 
@@ -82,10 +87,13 @@ export class AuthService {
 
   verifyToken(token: string): { id: string; email: string } {
     try {
-      const decoded = jwt.verify(token, this.JWT_SECRET) as { id: string; email: string };
+      const decoded = jwt.verify(token, this.JWT_SECRET) as {
+        id: string;
+        email: string;
+      };
       return decoded;
     } catch (error) {
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new UnauthorizedException("Invalid or expired token");
     }
   }
 
@@ -95,7 +103,12 @@ export class AuthService {
     });
   }
 
-  private toAuthUser(user: { id: string; email: string; name: string; role: string }): AuthUser {
+  private toAuthUser(user: {
+    id: string;
+    email: string;
+    name: string;
+    role: string;
+  }): AuthUser {
     return {
       id: user.id,
       email: user.email,

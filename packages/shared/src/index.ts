@@ -8,8 +8,8 @@ export interface ApiResponse<T = unknown> {
 
 // Health Check
 export interface HealthResponse {
-  status: 'healthy' | 'unhealthy';
-  database: 'connected' | 'disconnected';
+  status: "healthy" | "unhealthy";
+  database: "connected" | "disconnected";
   timestamp: string;
   error?: string;
 }
