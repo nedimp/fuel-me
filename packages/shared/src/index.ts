@@ -55,13 +55,13 @@ export interface RegisterDto {
   email: string;
   password: string;
   name: string;
-  role?: 'user' | 'admin';
+  role?: "user" | "admin";
 }
 
 export interface LoginDto {
   email: string;
   password: string;
-  expectedRole?: 'user' | 'admin';
+  expectedRole?: "user" | "admin";
 }
 
 export interface AuthResponse {

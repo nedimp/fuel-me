@@ -70,7 +70,7 @@ export class AuthService {
     // Validate role if expectedRole is provided
     if (dto.expectedRole && user.role !== dto.expectedRole) {
       throw new UnauthorizedException(
-        `This account is not authorized for ${dto.expectedRole} access`
+        `This account is not authorized for ${dto.expectedRole} access`,
       );
     }
 
