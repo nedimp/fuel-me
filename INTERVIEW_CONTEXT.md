@@ -7,6 +7,7 @@ This document provides battle-tested patterns for rapid feature development duri
 ## Project Status: ✅ READY
 
 All systems operational:
+
 - ✅ Backend running on port 4000
 - ✅ Site Manager running on port 3000
 - ✅ Dispatcher running on port 3001
@@ -28,7 +29,7 @@ All systems operational:
 export interface Order {
   id: string;
   customerId: string;
-  status: 'pending' | 'confirmed' | 'delivering' | 'completed' | 'cancelled';
+  status: "pending" | "confirmed" | "delivering" | "completed" | "cancelled";
   items: OrderItem[];
   total: number;
   deliveryAddress: string;
@@ -59,12 +60,13 @@ export interface CreateOrderItemDto {
 }
 
 export interface UpdateOrderDto {
-  status?: 'pending' | 'confirmed' | 'delivering' | 'completed' | 'cancelled';
+  status?: "pending" | "confirmed" | "delivering" | "completed" | "cancelled";
   deliveryAddress?: string;
 }
 ```
 
 **Build the shared package:**
+
 ```bash
 pnpm --filter shared build
 ```
@@ -128,6 +130,7 @@ CREATE TABLE order_items (
 ```
 
 **Generate Prisma client:**
+
 ```bash
 pnpm --filter backend db:generate
 ```
@@ -135,6 +138,7 @@ pnpm --filter backend db:generate
 ### Step 3: Backend Implementation (10-15 minutes)
 
 #### Create Module Folder
+
 ```bash
 mkdir -p apps/backend/src/orders
 ```
@@ -142,10 +146,10 @@ mkdir -p apps/backend/src/orders
 #### Module (`apps/backend/src/orders/orders.module.ts`)
 
 ```typescript
-import { Module } from '@nestjs/common';
-import { OrdersController } from './orders.controller';
-import { OrdersService } from './orders.service';
-import { PrismaService } from '../prisma.service';
+import { Module } from "@nestjs/common";
+import { OrdersController } from "./orders.controller";
+import { OrdersService } from "./orders.service";
+import { PrismaService } from "../prisma.service";
 
 @Module({
   controllers: [OrdersController],
@@ -169,21 +173,21 @@ import {
   Query,
   HttpCode,
   HttpStatus,
-} from '@nestjs/common';
-import { OrdersService } from './orders.service';
-import type { Order, CreateOrderDto, UpdateOrderDto } from 'shared';
+} from "@nestjs/common";
+import { OrdersService } from "./orders.service";
+import type { Order, CreateOrderDto, UpdateOrderDto } from "shared";
 
-@Controller('orders')
+@Controller("orders")
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get()
-  async findAll(@Query('status') status?: string): Promise<Order[]> {
+  async findAll(@Query("status") status?: string): Promise<Order[]> {
     return this.ordersService.findAll(status);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Order | null> {
+  @Get(":id")
+  async findOne(@Param("id") id: string): Promise<Order | null> {
     return this.ordersService.findOne(id);
   }
 
@@ -193,17 +197,17 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto);
   }
 
-  @Put(':id')
+  @Put(":id")
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() updateOrderDto: UpdateOrderDto,
   ): Promise<Order> {
     return this.ordersService.update(id, updateOrderDto);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param("id") id: string): Promise<void> {
     await this.ordersService.remove(id);
   }
 }
@@ -212,9 +216,9 @@ export class OrdersController {
 #### Service (`apps/backend/src/orders/orders.service.ts`)
 
 ```typescript
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import type { Order, CreateOrderDto, UpdateOrderDto } from 'shared';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "../prisma.service";
+import type { Order, CreateOrderDto, UpdateOrderDto } from "shared";
 
 @Injectable()
 export class OrdersService {
@@ -224,7 +228,7 @@ export class OrdersService {
     const orders = await this.prisma.order.findMany({
       where: status ? { status } : undefined,
       include: { items: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     return orders.map(this.toDto);
   }
@@ -249,9 +253,9 @@ export class OrdersService {
         customerId: dto.customerId,
         deliveryAddress: dto.deliveryAddress,
         total,
-        status: 'pending',
+        status: "pending",
         items: {
-          create: dto.items.map(item => ({
+          create: dto.items.map((item) => ({
             id: crypto.randomUUID(),
             productId: item.productId,
             productName: item.productName,
@@ -313,7 +317,7 @@ export class OrdersService {
 **Location**: `apps/backend/src/app.module.ts`
 
 ```typescript
-import { OrdersModule } from './orders/orders.module';
+import { OrdersModule } from "./orders/orders.module";
 
 @Module({
   imports: [OrdersModule], // Add this
@@ -526,7 +530,7 @@ export function OrdersAdmin() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Orders Management</h2>
-        
+
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -733,20 +737,21 @@ pnpm --filter shared build
 
 ## 📊 Time Management Strategy
 
-| Phase | Time | Activity |
-|-------|------|----------|
-| Planning | 3 min | Read user story, identify entities |
-| Types | 3 min | Define interfaces in shared package |
-| Database | 3 min | Prisma schema + manual table creation |
-| Backend | 15 min | Module, controller, service + register |
-| Site Manager | 15 min | Component + integration |
-| Dispatcher | 15 min | Admin component + integration |
-| Testing | 6 min | curl tests, browser tests, ESLint |
-| **Total** | **60 min** | Complete feature implementation |
+| Phase        | Time       | Activity                               |
+| ------------ | ---------- | -------------------------------------- |
+| Planning     | 3 min      | Read user story, identify entities     |
+| Types        | 3 min      | Define interfaces in shared package    |
+| Database     | 3 min      | Prisma schema + manual table creation  |
+| Backend      | 15 min     | Module, controller, service + register |
+| Site Manager | 15 min     | Component + integration                |
+| Dispatcher   | 15 min     | Admin component + integration          |
+| Testing      | 6 min      | curl tests, browser tests, ESLint      |
+| **Total**    | **60 min** | Complete feature implementation        |
 
 ## 🎯 Interview Success Checklist
 
 Before the interview starts:
+
 - [ ] Environment is running (`pnpm dev`)
 - [ ] All ports accessible (3000, 3001, 4000, 5432)
 - [ ] ESLint passing (`pnpm lint`)
@@ -755,6 +760,7 @@ Before the interview starts:
 - [ ] AI assistant configured and authenticated
 
 During the interview:
+
 - [ ] Types defined in shared package and built
 - [ ] Prisma schema updated
 - [ ] Database tables created

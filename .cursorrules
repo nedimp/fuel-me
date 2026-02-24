@@ -1,6 +1,7 @@
 # Fuel.me Interview Project - AI Assistant Context
 
 ## Project Overview
+
 This is a monorepo for a technical interview with Fuel.me. Built for speed and type safety.
 
 **Time constraint: 60 minutes for feature implementation**
@@ -8,6 +9,7 @@ This is a monorepo for a technical interview with Fuel.me. Built for speed and t
 ## Architecture
 
 ### Monorepo Structure
+
 ```
 fuel-me-interview-prep/
 ├── apps/
@@ -19,6 +21,7 @@ fuel-me-interview-prep/
 ```
 
 ### Tech Stack
+
 - **Frontend**: React 18 + Vite + TypeScript (strict) + TailwindCSS
 - **Backend**: NestJS + TypeScript (strict) + Prisma ORM
 - **Database**: PostgreSQL 16 (Docker)
@@ -29,6 +32,7 @@ fuel-me-interview-prep/
 ## Critical Patterns
 
 ### 1. Type-First Development
+
 **ALWAYS start with types in the shared package**
 
 ```typescript
@@ -36,22 +40,24 @@ fuel-me-interview-prep/
 export interface MyEntity {
   id: string;
   name: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt: string;
 }
 
 export interface CreateMyEntityDto {
   name: string;
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
 }
 ```
 
 After adding types:
+
 ```bash
 pnpm --filter shared build
 ```
 
 ### 2. Database Schema (Prisma)
+
 Add to `apps/backend/prisma/schema.prisma`:
 
 ```prisma
@@ -67,6 +73,7 @@ model MyEntity {
 ```
 
 Create table manually (due to Prisma permissions issue):
+
 ```bash
 docker exec fuel-me-postgres psql -U postgres -d fuel_me_dev -c "
 CREATE TABLE my_entities (
@@ -81,11 +88,12 @@ CREATE TABLE my_entities (
 ### 3. Backend Implementation (NestJS)
 
 **Module** (`apps/backend/src/my-entity/my-entity.module.ts`):
+
 ```typescript
-import { Module } from '@nestjs/common';
-import { MyEntityController } from './my-entity.controller';
-import { MyEntityService } from './my-entity.service';
-import { PrismaService } from '../prisma.service';
+import { Module } from "@nestjs/common";
+import { MyEntityController } from "./my-entity.controller";
+import { MyEntityService } from "./my-entity.service";
+import { PrismaService } from "../prisma.service";
 
 @Module({
   controllers: [MyEntityController],
@@ -95,12 +103,13 @@ export class MyEntityModule {}
 ```
 
 **Controller** (`apps/backend/src/my-entity/my-entity.controller.ts`):
-```typescript
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-import { MyEntityService } from './my-entity.service';
-import type { MyEntity, CreateMyEntityDto } from 'shared';
 
-@Controller('my-entities')
+```typescript
+import { Controller, Get, Post, Body, Param } from "@nestjs/common";
+import { MyEntityService } from "./my-entity.service";
+import type { MyEntity, CreateMyEntityDto } from "shared";
+
+@Controller("my-entities")
 export class MyEntityController {
   constructor(private readonly service: MyEntityService) {}
 
@@ -109,8 +118,8 @@ export class MyEntityController {
     return this.service.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string): Promise<MyEntity | null> {
+  @Get(":id")
+  findOne(@Param("id") id: string): Promise<MyEntity | null> {
     return this.service.findOne(id);
   }
 
@@ -122,10 +131,11 @@ export class MyEntityController {
 ```
 
 **Service** (`apps/backend/src/my-entity/my-entity.service.ts`):
+
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import type { MyEntity, CreateMyEntityDto } from 'shared';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma.service";
+import type { MyEntity, CreateMyEntityDto } from "shared";
 
 @Injectable()
 export class MyEntityService {
@@ -133,7 +143,7 @@ export class MyEntityService {
 
   async findAll(): Promise<MyEntity[]> {
     const entities = await this.prisma.myEntity.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     return entities.map(this.toDto);
   }
@@ -164,6 +174,7 @@ export class MyEntityService {
 ```
 
 **Register in AppModule** (`apps/backend/src/app.module.ts`):
+
 ```typescript
 import { MyEntityModule } from './my-entity/my-entity.module';
 
@@ -176,6 +187,7 @@ import { MyEntityModule } from './my-entity/my-entity.module';
 ### 4. Frontend Implementation
 
 **Site Manager** (`apps/site-manager/src/components/MyEntityList.tsx`):
+
 ```typescript
 import { useState, useEffect } from 'react';
 import type { MyEntity } from 'shared';
@@ -220,6 +232,7 @@ export function MyEntityList() {
 ```
 
 **Dispatcher** (similar but with admin-focused UI):
+
 ```typescript
 // apps/dispatcher/src/components/MyEntityAdmin.tsx
 // Add create/edit forms, bulk actions, etc.
@@ -230,18 +243,21 @@ export function MyEntityList() {
 ### Creating a Complete Feature (5-minute workflow)
 
 1. **Types First** (1 min):
+
    ```bash
    # Edit packages/shared/src/index.ts
    pnpm --filter shared build
    ```
 
 2. **Database** (1 min):
+
    ```bash
    # Add to apps/backend/prisma/schema.prisma
    # Create table via docker exec (see pattern above)
    ```
 
 3. **Backend** (2 min):
+
    ```bash
    # Create module, controller, service
    # Register in AppModule
@@ -280,14 +296,16 @@ lsof -ti:3001 | xargs kill -9
 ## Database Setup
 
 **Connection Details:**
+
 - Host: localhost
 - Port: 5432
 - Database: fuel_me_dev
 - User: postgres
 - Password: postgres
 
-**Important Note:** 
+**Important Note:**
 Due to a Prisma permissions issue, create tables manually using `docker exec`. The pattern is:
+
 - Define model in Prisma schema
 - Create table via psql command
 - Prisma client will work for queries
@@ -295,24 +313,25 @@ Due to a Prisma permissions issue, create tables manually using `docker exec`. T
 ## Validation (Backend)
 
 ```typescript
-import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum } from "class-validator";
 
 export class CreateMyEntityDto {
   @IsString()
   name: string;
 
   @IsOptional()
-  @IsEnum(['active', 'inactive'])
-  status?: 'active' | 'inactive';
+  @IsEnum(["active", "inactive"])
+  status?: "active" | "inactive";
 }
 ```
 
 ## CORS Configuration
 
 Already configured in `apps/backend/src/main.ts`:
+
 ```typescript
 app.enableCors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: ["http://localhost:3000", "http://localhost:3001"],
   credentials: true,
 });
 ```
@@ -326,6 +345,7 @@ app.enableCors({
 ## Quick Reference
 
 ### File Locations
+
 - **Shared Types**: `packages/shared/src/index.ts`
 - **Prisma Schema**: `apps/backend/prisma/schema.prisma`
 - **Backend Modules**: `apps/backend/src/[module-name]/`
@@ -333,12 +353,14 @@ app.enableCors({
 - **Dispatcher Components**: `apps/dispatcher/src/components/`
 
 ### Ports
+
 - Backend: 4000
 - Site Manager: 3000
 - Dispatcher: 3001
 - PostgreSQL: 5432
 
 ### Import Paths
+
 - Shared types: `import type { MyType } from 'shared'`
 - Prisma client: `import { PrismaClient } from '@prisma/client'`
 

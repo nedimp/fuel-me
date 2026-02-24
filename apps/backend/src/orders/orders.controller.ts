@@ -88,4 +88,32 @@ export class OrdersController {
       };
     }
   }
+
+  @Get("my-orders")
+  @UseGuards(JwtAuthGuard)
+  async getMyOrders(
+    @Request() req: RequestWithUser,
+  ): Promise<ApiResponse<Order[]>> {
+    try {
+      // Only users can view their own orders
+      if (req.user.role !== "user") {
+        throw new UnauthorizedException("Only users can view their orders");
+      }
+
+      const orders = await this.ordersService.getUserOrders(req.user.id);
+
+      return {
+        success: true,
+        data: orders,
+        message: "User orders retrieved successfully",
+      };
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Failed to retrieve orders";
+      return {
+        success: false,
+        error: message,
+      };
+    }
+  }
 }

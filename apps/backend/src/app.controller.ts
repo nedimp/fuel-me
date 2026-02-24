@@ -1,5 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get } from "@nestjs/common";
+import { AppService } from "./app.service";
 
 @Controller()
 export class AppController {
@@ -8,17 +8,17 @@ export class AppController {
   @Get()
   getRoot() {
     return {
-      message: 'Fuel.me API is running',
+      message: "Fuel.me API is running",
       timestamp: new Date().toISOString(),
     };
   }
 
-  @Get('health')
+  @Get("health")
   getHealth() {
     return this.appService.getHealth();
   }
 
-  @Get('hello')
+  @Get("hello")
   getHello() {
     return this.appService.getHello();
   }

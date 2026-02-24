@@ -120,7 +120,7 @@ rules: {
 
 - **Purpose**: Public-facing application
 - **Theme**: Blue/Indigo gradient
-- **Features**: 
+- **Features**:
   - Fetches data from backend
   - Displays API health status
   - Shows type-safe API responses
@@ -181,6 +181,7 @@ Using **pnpm** workspaces for efficient monorepo management:
 ### Adding a New Feature
 
 1. **Define types in `shared` package:**
+
    ```typescript
    // packages/shared/src/index.ts
    export interface MyFeature {
@@ -190,11 +191,13 @@ Using **pnpm** workspaces for efficient monorepo management:
    ```
 
 2. **Build shared package:**
+
    ```bash
    pnpm --filter shared build
    ```
 
 3. **Implement backend logic:**
+
    ```typescript
    // apps/backend/src/app.controller.ts
    @Get('feature')
@@ -204,10 +207,11 @@ Using **pnpm** workspaces for efficient monorepo management:
    ```
 
 4. **Use in both frontends:**
+
    ```typescript
    // apps/site-manager/src/App.tsx
-   import type { MyFeature } from 'shared';
-   
+   import type { MyFeature } from "shared";
+
    const [feature, setFeature] = useState<MyFeature | null>(null);
    ```
 

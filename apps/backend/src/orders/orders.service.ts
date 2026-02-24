@@ -83,4 +83,24 @@ export class OrdersService {
       user: order.user,
     }));
   }
+
+  async getUserOrders(userId: string): Promise<Order[]> {
+    const orders = await this.prisma.order.findMany({
+      where: {
+        userId,
+      },
+      orderBy: [{ createdAt: "desc" }],
+    });
+
+    return orders.map((order) => ({
+      id: order.id,
+      userId: order.userId,
+      fuelType: order.fuelType as FuelType,
+      gallons: order.gallons,
+      urgencyLevel: order.urgencyLevel as UrgencyLevel,
+      totalPrice: order.totalPrice,
+      createdAt: order.createdAt.toISOString(),
+      updatedAt: order.updatedAt.toISOString(),
+    }));
+  }
 }

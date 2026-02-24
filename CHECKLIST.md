@@ -7,23 +7,28 @@ Run through this checklist **before** your interview call.
 ### 1. Docker & PostgreSQL
 
 **Start Docker Desktop:**
+
 - Open Docker Desktop application on your Mac
 - Wait for it to fully start (whale icon should be stable in menu bar)
 
 **Start PostgreSQL:**
+
 ```bash
 docker-compose up -d
 ```
 
 **Verify it's running:**
+
 ```bash
 docker ps
 ```
+
 You should see `fuel-me-postgres` container running.
 
 ### 2. Database Setup
 
 **Run migrations:**
+
 ```bash
 pnpm db:migrate
 ```
@@ -33,11 +38,13 @@ This will create the initial database schema.
 ### 3. Dependencies Check
 
 **Ensure all dependencies are installed:**
+
 ```bash
 pnpm install
 ```
 
 **Build shared types:**
+
 ```bash
 pnpm --filter shared build
 ```
@@ -45,6 +52,7 @@ pnpm --filter shared build
 ### 4. Linting Verification
 
 **Run linting (should pass with zero errors):**
+
 ```bash
 pnpm lint
 ```
@@ -54,11 +62,13 @@ pnpm lint
 ### 5. Start All Applications
 
 **Start everything in development mode:**
+
 ```bash
 pnpm dev
 ```
 
 This will start:
+
 - Backend API: http://localhost:4000
 - Site Manager: http://localhost:3000
 - Dispatcher: http://localhost:3001
@@ -81,6 +91,7 @@ Open three browser tabs:
 ### 7. TypeScript Type Safety Verification
 
 **Check that types are shared:**
+
 - Both frontend apps import types from the `shared` package
 - No TypeScript errors in your IDE
 - IntelliSense/autocomplete works for API response types

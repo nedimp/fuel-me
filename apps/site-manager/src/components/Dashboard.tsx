@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { AuthUser } from "shared";
 import { OrderForm } from "./OrderForm";
+import { MyOrders } from "./MyOrders";
 
 const API_URL = "http://localhost:4000";
 
@@ -92,6 +93,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Order History - Full width below */}
+        <div className="mt-6">
+          <MyOrders token={token} />
         </div>
       </main>
     </div>

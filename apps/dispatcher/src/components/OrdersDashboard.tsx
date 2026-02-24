@@ -11,16 +11,28 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Filter states
+  const [sortBy, setSortBy] = useState<
+    "urgency" | "price" | "gallons" | "date"
+  >("urgency");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [fuelTypeFilter, setFuelTypeFilter] = useState<
+    "All" | "Diesel" | "Unleaded"
+  >("All");
 
   useEffect(() => {
     fetchOrders();
-    // Refresh every 10 seconds
-    const interval = setInterval(fetchOrders, 10000);
+    // Auto-refresh every 5 seconds
+    const interval = setInterval(fetchOrders, 5000);
     return () => clearInterval(interval);
   }, [token]);
 
   const fetchOrders = async () => {
     try {
+      setIsRefreshing(true);
       const response = await fetch(`${API_URL}/orders`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -31,6 +43,7 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
 
       if (result.success && result.data) {
         setOrders(result.data);
+        setLastUpdate(new Date());
         setError("");
       } else {
         setError(result.error || "Failed to fetch orders");
@@ -39,6 +52,7 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -79,12 +93,38 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
     }
   };
 
-  // Sort orders by urgency (Critical > High > Standard), then by date
-  const sortedOrders = [...orders].sort((a, b) => {
-    const priorityDiff =
-      getOrderPriority(b.urgencyLevel) - getOrderPriority(a.urgencyLevel);
-    if (priorityDiff !== 0) return priorityDiff;
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  // Filter orders by fuel type
+  const filteredOrders = orders.filter((order) => {
+    if (fuelTypeFilter === "All") return true;
+    return order.fuelType === fuelTypeFilter;
+  });
+
+  // Sort orders based on selected criteria
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
+    let comparison = 0;
+
+    switch (sortBy) {
+      case "urgency":
+        comparison =
+          getOrderPriority(b.urgencyLevel) - getOrderPriority(a.urgencyLevel);
+        if (comparison === 0) {
+          comparison =
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+        break;
+      case "price":
+        comparison = a.totalPrice - b.totalPrice;
+        break;
+      case "gallons":
+        comparison = a.gallons - b.gallons;
+        break;
+      case "date":
+        comparison =
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        break;
+    }
+
+    return sortDirection === "asc" ? comparison : -comparison;
   });
 
   if (loading) {
@@ -114,11 +154,13 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
   }
 
   // Summary stats
-  const criticalCount = orders.filter(
+  const criticalCount = filteredOrders.filter(
     (o) => o.urgencyLevel === "Critical",
   ).length;
-  const highCount = orders.filter((o) => o.urgencyLevel === "High").length;
-  const standardCount = orders.filter(
+  const highCount = filteredOrders.filter(
+    (o) => o.urgencyLevel === "High",
+  ).length;
+  const standardCount = filteredOrders.filter(
     (o) => o.urgencyLevel === "Standard",
   ).length;
 
@@ -130,7 +172,14 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
           <h3 className="text-sm font-medium text-gray-600 mb-1">
             Total Orders
           </h3>
-          <p className="text-3xl font-bold text-purple-600">{orders.length}</p>
+          <p className="text-3xl font-bold text-purple-600">
+            {filteredOrders.length}
+          </p>
+          {fuelTypeFilter !== "All" && (
+            <p className="text-xs text-gray-500 mt-1">
+              ({orders.length} total)
+            </p>
+          )}
         </div>
         <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-500">
           <h3 className="text-sm font-medium text-gray-600 mb-1">
@@ -155,13 +204,86 @@ export function OrdersDashboard({ token }: OrdersDashboardProps) {
       {/* Orders List */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Active Orders</h2>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Active Orders
+            </h2>
+            <div className="flex items-center gap-3 mt-1">
+              <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                <div
+                  className={`w-2 h-2 rounded-full ${isRefreshing ? "bg-green-500 animate-pulse" : "bg-gray-400"}`}
+                ></div>
+                <span>Auto-refresh: 5s</span>
+              </div>
+              <span className="text-xs text-gray-400">•</span>
+              <span className="text-xs text-gray-500">
+                Last updated: {lastUpdate.toLocaleTimeString()}
+              </span>
+            </div>
+          </div>
           <button
             onClick={fetchOrders}
-            className="px-3 py-1 text-sm text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded transition-colors"
+            disabled={isRefreshing}
+            className="px-3 py-1 text-sm text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            🔄 Refresh
+            {isRefreshing ? "🔄 Updating..." : "🔄 Refresh Now"}
           </button>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-3 mb-4 pb-4 border-b border-gray-200">
+          {/* Sort By */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Sort by:
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+            >
+              <option value="urgency">Urgency</option>
+              <option value="price">Price</option>
+              <option value="gallons">Gallons</option>
+              <option value="date">Date Created</option>
+            </select>
+          </div>
+
+          {/* Sort Direction */}
+          <button
+            onClick={() =>
+              setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+            }
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1"
+            title={`Sort ${sortDirection === "asc" ? "ascending" : "descending"}`}
+          >
+            {sortDirection === "asc" ? "↑ Ascending" : "↓ Descending"}
+          </button>
+
+          {/* Fuel Type Filter */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Fuel Type:
+            </label>
+            <select
+              value={fuelTypeFilter}
+              onChange={(e) =>
+                setFuelTypeFilter(e.target.value as typeof fuelTypeFilter)
+              }
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+            >
+              <option value="All">All Types</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Unleaded">Unleaded</option>
+            </select>
+          </div>
+
+          {/* Results Count */}
+          <div className="ml-auto flex items-center text-sm text-gray-600">
+            Showing{" "}
+            <span className="font-semibold mx-1">{sortedOrders.length}</span> of{" "}
+            <span className="font-semibold ml-1">{orders.length}</span> orders
+          </div>
         </div>
 
         <div className="space-y-3">

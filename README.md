@@ -61,6 +61,7 @@ pnpm dev
 ```
 
 **Open in browser:**
+
 - Backend API: http://localhost:4000/health
 - Site Manager: http://localhost:3000
 - Dispatcher: http://localhost:3001
@@ -82,45 +83,50 @@ curl http://localhost:4000/health
 
 ## 📦 Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start all apps in development mode |
-| `pnpm build` | Build all apps for production |
-| `pnpm lint` | Run ESLint on all packages (must pass!) |
-| `pnpm db:migrate` | Run database migrations |
-| `pnpm db:studio` | Open Prisma Studio (database GUI) |
+| Command           | Description                             |
+| ----------------- | --------------------------------------- |
+| `pnpm dev`        | Start all apps in development mode      |
+| `pnpm build`      | Build all apps for production           |
+| `pnpm lint`       | Run ESLint on all packages (must pass!) |
+| `pnpm db:migrate` | Run database migrations                 |
+| `pnpm db:studio`  | Open Prisma Studio (database GUI)       |
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React + Vite + TypeScript + TailwindCSS |
-| **Backend** | NestJS + TypeScript |
-| **Database** | PostgreSQL + Prisma ORM |
-| **Package Manager** | pnpm (workspace) |
-| **Type Safety** | Shared TypeScript types package |
-| **Linting** | ESLint (strict mode) |
+| Layer               | Technology                              |
+| ------------------- | --------------------------------------- |
+| **Frontend**        | React + Vite + TypeScript + TailwindCSS |
+| **Backend**         | NestJS + TypeScript                     |
+| **Database**        | PostgreSQL + Prisma ORM                 |
+| **Package Manager** | pnpm (workspace)                        |
+| **Type Safety**     | Shared TypeScript types package         |
+| **Linting**         | ESLint (strict mode)                    |
 
 ## 🎯 What You Have
 
 ✅ **Two Frontend Applications:**
+
 - Site Manager (Public-facing) - Port 3000
 - Dispatcher (Admin Dashboard) - Port 3001
 
 ✅ **One Backend Application:**
+
 - NestJS API with health checks - Port 4000
 
 ✅ **Type-Safe Architecture:**
+
 - Shared TypeScript types between all apps
 - Strict TypeScript mode enabled
 - ESLint configured with zero tolerance
 
 ✅ **Database Ready:**
+
 - PostgreSQL running in Docker
 - Prisma ORM configured
 - Migrations ready to run
 
 ✅ **Professional Setup:**
+
 - Monorepo with pnpm workspaces
 - Hot-reload in development
 - Production-ready build scripts
@@ -143,6 +149,7 @@ curl http://localhost:4000/health
 ## 🆘 Troubleshooting
 
 ### Port conflicts
+
 ```bash
 lsof -ti:3000 | xargs kill -9
 lsof -ti:3001 | xargs kill -9
@@ -150,6 +157,7 @@ lsof -ti:4000 | xargs kill -9
 ```
 
 ### Database issues
+
 ```bash
 docker-compose down
 docker-compose up -d
@@ -157,6 +165,7 @@ pnpm db:migrate
 ```
 
 ### Module not found
+
 ```bash
 pnpm --filter shared build
 pnpm --filter backend db:generate
