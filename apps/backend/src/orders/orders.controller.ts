@@ -41,6 +41,22 @@ export class OrdersController {
         throw new BadRequestException("Gallons must be greater than 0");
       }
 
+      // Validate fuelType
+      const validFuelTypes = ["Diesel", "Unleaded"];
+      if (!validFuelTypes.includes(createOrderDto.fuelType)) {
+        throw new BadRequestException(
+          "Invalid fuel type. Must be 'Diesel' or 'Unleaded'",
+        );
+      }
+
+      // Validate urgencyLevel
+      const validUrgencyLevels = ["Standard", "High", "Critical"];
+      if (!validUrgencyLevels.includes(createOrderDto.urgencyLevel)) {
+        throw new BadRequestException(
+          "Invalid urgency level. Must be 'Standard', 'High', or 'Critical'",
+        );
+      }
+
       const order = await this.ordersService.createOrder(
         req.user.id,
         createOrderDto,
