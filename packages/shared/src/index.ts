@@ -42,3 +42,28 @@ export interface UpdateUserDto {
   name?: string;
   role?: string;
 }
+
+// Authentication types
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
+export interface RegisterDto {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface LoginDto {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: AuthUser;
+  token: string;
+  message: string;
+}
